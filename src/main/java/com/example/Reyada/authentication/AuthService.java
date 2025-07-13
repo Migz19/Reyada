@@ -1,36 +1,44 @@
 package com.example.Reyada.authentication;
 
-import com.example.Reyada.authentication.config.UserDetailsServiceImpl;
-import com.example.Reyada.entities.MyUser;
+import com.example.Reyada.authentication.config.LoginResponse;
+import com.example.Reyada.authentication.entities.MyUser;
+import com.example.Reyada.authentication.exception.EmailAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
     @Autowired
     AuthRepo authRepo;
+    @Autowired
+    private PasswordEncoder encoder;
+
     public MyUser register(MyUser user) {
 
-        if (user.getEmail() == null || user.getPassword() == null || user.getName() == null) {
-            user.setName("annonyonmous");
-           // throw new IllegalArgumentException("Email, password, and name must not be null");
+        if (authRepo.existsByEmail(user.getEmail())) {
+            throw new EmailAlreadyExistsException();
         }
-        if (user.getEmail().isEmpty()||user.getName().isEmpty()|| user.getPassword().isEmpty()) {
-            user.setName("annonyonmous");
-           // throw new IllegalArgumentException("Email, password, and name must not be empty");
-
-    }
-        if (authRepo.findByEmail(user.getEmail()) != null) {
-            throw new IllegalArgumentException("User with this email already exists");
-        }
+        user.setPassword(encoder.encode(user.getPassword()));
         return authRepo.save(user);
     }
 
-    public MyUser findByEmail(String email){
-        return authRepo.findByEmail(email);
+
+
+    public ResponseEntity<?> login(LoginRequest request) {
+        MyUser user = authRepo.findByEmail(request.getEmail());
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+        if (!encoder.matches(request.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid credentials");
+        }
+
+        return ResponseEntity.ok(new LoginResponse(user.getId(),
+                user.getName(),
+                user.getEmail()));
     }
-//    public void updatePassword(String email,String newPassword){
-//        authRepo.updatePassword(email, newPassword);
-//    }
 }

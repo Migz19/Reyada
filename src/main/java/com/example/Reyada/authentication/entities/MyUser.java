@@ -1,4 +1,4 @@
-package com.example.Reyada.entities;
+package com.example.Reyada.authentication.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

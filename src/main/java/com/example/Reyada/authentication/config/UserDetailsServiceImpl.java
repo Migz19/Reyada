@@ -1,7 +1,7 @@
 package com.example.Reyada.authentication.config;
 
 import com.example.Reyada.authentication.AuthRepo;
-import com.example.Reyada.entities.MyUser;
+import com.example.Reyada.authentication.entities.MyUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
