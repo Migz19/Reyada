@@ -1,4 +1,6 @@
-# Authentication Feature
+# Reyada CRM
+
+## Authentication Feature
 
 A simple authentication module built with **Java Spring Boot** and **MySQL**, with a basic HTML/CSS/JavaScript frontend.
 
