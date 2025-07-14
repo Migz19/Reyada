@@ -1,4 +1,4 @@
-package com.example.Reyada.authentication.config;
+package com.example.Reyada.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +24,12 @@ public class SecurityConfig {
                         "/css/**",
                         "/js/**",
                         "/images/**",
+                        "/crm/**",
+                        "/contacts.html",    // <— add this
                         // allow the AJAX endpoints
                         "/auth/register",
-                        "/auth/login"
+                        "/auth/login",
+                        "/contacts_dashboard.html"
                 ).permitAll()
                 // everything else still requires auth
                 .anyRequest().authenticated()
