@@ -59,6 +59,8 @@ A simple **Java Spring Boot** application with a **MySQL** database and a basic 
 4. **Access**:
    - `http://localhost:8080/auth.html`
    - `http://localhost:8080/profile.html`
+   - `http://localhost:8080/crm/contacts_dashboard.html`
+   - `http://localhost:8080/crm/contacts.html`
 
 > **Note**: Passwords are hashed with **BCrypt** before storage.
 
