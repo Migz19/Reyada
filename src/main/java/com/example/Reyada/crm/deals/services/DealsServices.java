@@ -1,6 +1,7 @@
 package com.example.Reyada.crm.deals.services;
 
 import com.example.Reyada.crm.deals.DealResponse;
+import com.example.Reyada.crm.tasks.TaskRequest;
 import com.example.Reyada.crm.deals.data.Deal;
 import com.example.Reyada.crm.deals.data.DealsRepo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,8 +14,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -141,8 +140,6 @@ public class DealsServices {
         Map<String, Object> fields = new HashMap<>();
         fields.put("STAGE_ID", "WON");
 
-
-        updateDealInBitrix(id, fields);
 
         return repo.save(deal);
     }

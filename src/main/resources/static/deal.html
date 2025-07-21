@@ -102,60 +102,162 @@
     <input type="checkbox" id="wonCheckbox" />
     <label for="wonCheckbox">Mark as “Deal won”</label>
 </div>
-
 <script>
-    const params = new URLSearchParams(location.search);
-    const id     = params.get('id');
-    if (!id) {
-      document.getElementById('dealInfo').textContent = 'No deal ID provided';
-      throw new Error('No id');
-    }
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing script...');
 
-    // 1) Load deal details
-    let deal;
-    fetch(`/d/${id}`)
-      .then(r => r.json())
-      .then(d => {
-        deal = d;
-        const info = document.getElementById('dealInfo');
-        info.innerHTML = `
-          <p><strong>ID:</strong> ${d.ID}</p>
-          <p><strong>Title:</strong> ${d.TITLE}</p>
-          <p><strong>Stage:</strong> ${d.STAGE_ID}</p>
-          <p><strong>Opportunity:</strong> ${d.OPPORTUNITY}</p>
-          <p><strong>Created:</strong> ${d.DATE_CREATE}</p>
-        `;
-        document.getElementById('contractInput').value = d.contract || '';
-        document.getElementById('taxIdInput').value   = d.taxRegistrationId || '';
-        document.getElementById('wonCheckbox').checked = (d.STAGE_ID === 'Deal won');
-      });
+            const params = new URLSearchParams(location.search);
+            const id = params.get('id');
 
-    // 2) Save updates
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      const body = {
-        contract: document.getElementById('contractInput').value,
-        taxRegistrationId: document.getElementById('taxIdInput').value
-      };
-      fetch(`/d/${id}`, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body)
-      }).then(r => {
-        if (r.ok) alert('Deal updated');
-        else     alert('Update failed');
-      });
-    });
+            console.log('Deal ID from URL:', id);
 
-    // 3) Mark as “Deal won”
-    document.getElementById('wonCheckbox').addEventListener('change', e => {
-      if (e.target.checked) {
-        fetch(`/d/${id}/won`, { method: 'POST' })
-          .then(r => {
-            if (r.ok) alert('Stage set to Deal won');
-            else     alert('Could not update stage');
-          });
-      }
-    });
-  </script>
+            if (!id) {
+                document.getElementById('dealInfo').textContent = 'No deal ID provided';
+                console.error('No deal ID provided in URL');
+                throw new Error('No id');
+            }
+
+            let deal;
+
+            // 1) Load deal details
+            console.log('Fetching deal details...');
+            fetch(`/d/${id}`)
+                .then(r => {
+                    console.log('Deal fetch response status:', r.status);
+                    return r.json();
+                })
+                .then(d => {
+                    console.log('Deal data received:', d);
+                    deal = d;
+
+                    document.getElementById('dealInfo').innerHTML = `
+                        <p><strong>ID:</strong> ${d.ID}</p>
+                        <p><strong>Title:</strong> ${d.TITLE}</p>
+                        <p><strong>Stage:</strong> ${d.STAGE_ID}</p>
+                        <p><strong>Opportunity:</strong> ${d.OPPORTUNITY}</p>
+                        <p><strong>Created:</strong> ${d.DATE_CREATE}</p>
+                    `;
+
+                    document.getElementById('contractInput').value = d.contract || '';
+                    document.getElementById('taxIdInput').value = d.taxRegistrationId || '';
+                    document.getElementById('wonCheckbox').checked = (d.STAGE_ID === 'Deal won');
+
+                    console.log('Deal UI updated successfully');
+                })
+                .catch(err => {
+                    console.error('Error fetching deal:', err);
+                    document.getElementById('dealInfo').textContent = 'Error loading deal';
+                });
+
+            // 2) Save updates
+            console.log('Setting up save button event listener...');
+            document.getElementById('saveBtn').addEventListener('click', () => {
+                console.log('Save button clicked');
+
+                const body = {
+                    contract: document.getElementById('contractInput').value,
+                    taxRegistrationId: document.getElementById('taxIdInput').value
+                };
+
+                console.log('Saving deal updates:', body);
+
+                fetch(`/d/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }).then(r => {
+                    console.log('Save response status:', r.status);
+                    if (r.ok) {
+                        alert('Deal updated');
+                        console.log('Deal updated successfully');
+                    } else {
+                        alert('Update failed');
+                        console.error('Deal update failed');
+                    }
+                }).catch(err => {
+                    console.error('Error saving deal:', err);
+                    alert('Update failed');
+                });
+            });
+
+            // 3) Mark as "Deal won" and create a task
+            console.log('Setting up checkbox event listener...');
+            document.getElementById('wonCheckbox').addEventListener('change', async e => {
+                console.log('1. Checkbox change event triggered');
+                console.log('2. Checkbox checked:', e.target.checked);
+
+                if (!e.target.checked) {
+                    console.log('3. Checkbox unchecked, returning early');
+                    return;
+                }
+
+                console.log('4. Checkbox is checked, continuing...');
+
+                if (!deal) {
+                    console.log('5. Deal object is null/undefined:', deal);
+                    alert('Deal data not loaded yet. Please wait and try again.');
+                    e.target.checked = false;
+                    return;
+                }
+
+                console.log('6. Deal object exists:', deal);
+
+                try {
+                    console.log('7. Starting task creation process...');
+
+                    const taskPayload = {
+                        TITLE: deal.TITLE,
+                        DEADLINE: new Date().toISOString(),
+                        RESPONSIBLE_ID: 13
+                    };
+
+                    console.log('8. Task payload created:', taskPayload);
+                    console.log('8.1. Deal.TITLE value:', deal.TITLE);
+                    console.log('8.2. Stringified payload:', JSON.stringify(taskPayload));
+                    console.log('9. About to make fetch request to api/tasks/create...');
+
+                    const taskResp = await fetch('http://localhost:8080/api/tasks/create', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(taskPayload)
+                    });
+
+                    console.log('10. Task fetch request completed');
+                    console.log('Task response status:', taskResp.status);
+                    console.log('Task response ok:', taskResp.ok);
+
+                    const taskResponseText = await taskResp.text();
+                    console.log('Task response body:', taskResponseText);
+
+                    if (!taskResp.ok) {
+                        throw new Error(`Task creation failed: ${taskResp.status} - ${taskResponseText}`);
+                    }
+
+                    console.log('11. Task created successfully, now marking deal as won...');
+
+                    // B) Now mark deal as won
+                    const winResp = await fetch(`/d/${id}/won`, { method: 'POST' });
+                    console.log('Deal-won endpoint status:', winResp.status);
+
+                    if (!winResp.ok) {
+                        const winResponseText = await winResp.text();
+                        console.log('Deal-won response body:', winResponseText);
+                        throw new Error(`Deal-won failed: ${winResp.status} - ${winResponseText}`);
+                    }
+
+                    console.log('12. Both task creation and deal won completed successfully');
+                    alert('Task created & deal marked as won!');
+
+                } catch (err) {
+                    console.log('13. Error caught in checkbox handler:', err);
+                    console.error('Full error object:', err);
+                    alert('Error: ' + err.message);
+                    e.target.checked = false; // Reset checkbox on error
+                }
+            });
+
+            console.log('Script initialization completed');
+        });
+    </script>
 </body>
 </html>

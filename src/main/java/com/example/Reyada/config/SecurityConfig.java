@@ -31,7 +31,9 @@ public class SecurityConfig {
                         "/auth/register",
                         "/auth/login",
                         "/sales_order.html",
-                        "/deal.html?id=17"
+                        "/deal.html?id=17",
+                        "/api/tasks/create"
+
 
                 ).permitAll()
                 // everything else still requires auth
