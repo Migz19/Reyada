@@ -1,7 +1,9 @@
-package com.example.Reyada.authentication;
+package com.example.Reyada.authentication.services;
 
-import com.example.Reyada.authentication.config.LoginResponse;
-import com.example.Reyada.authentication.entities.MyUser;
+import com.example.Reyada.authentication.data.AuthRepo;
+import com.example.Reyada.authentication.dto.LoginRequest;
+import com.example.Reyada.authentication.dto.LoginResponse;
+import com.example.Reyada.authentication.data.MyUser;
 import com.example.Reyada.authentication.exception.EmailAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

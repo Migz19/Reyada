@@ -4,56 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <!-- Removed Tailwind CSS script -->
     <style>
         body {
-            font-family: 'Inter', sans-serif; /* Fallback to sans-serif if Inter is not available */
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #f3f4f6; /* Light gray background */
-            color: #1f2937; /* Dark text color */
-            margin: 0; /* Remove default body margin */
+            background: #f3f4f6;
+            color: #1f2937;
+            margin: 0;
         }
         .profile-card {
-            background: #ffffff; /* White background for the card */
-            padding: 2.5rem; /* Padding inside the card */
-            border-radius: 1rem; /* Rounded corners */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             width: 100%;
-            max-width: 400px; /* Max width for responsiveness */
+            max-width: 400px;
             text-align: center;
-            box-sizing: border-box; /* Include padding in width calculation */
+            box-sizing: border-box;
         }
         .profile-card h1 {
-            font-size: 2.25rem; /* Large heading font size (36px) */
-            font-weight: 700; /* Bold font weight */
-            margin-bottom: 1.5rem; /* Space below heading */
-            color: #1f2937; /* Dark text color */
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
         }
         .profile-info p {
-            font-size: 1.125rem; /* Paragraph text size (18px) */
-            margin-bottom: 0.75rem; /* Space below paragraphs */
-            color: #4b5563; /* Gray text color */
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+            color: #4b5563;
         }
         .profile-info strong {
-            color: #1f2937; /* Darker text for labels */
+            color: #1f2937;
+        }
+        .button {
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 0.5rem;
+            transition: background 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .manage-contacts-button {
+            background: #3b82f6; /* Blue background */
+            margin-top: 1.5rem;
+        }
+        .manage-contacts-button:hover {
+            background: #2563eb; /* Darker blue on hover */
         }
         .logout-button {
-            background: #ef4444; /* Red background */
-            color: #ffffff; /* White text */
-            padding: 0.75rem 1.5rem; /* Padding inside button */
-            border-radius: 0.5rem; /* Rounded corners */
-            border: none; /* Remove default border */
-            cursor: pointer; /* Pointer cursor on hover */
-            font-size: 1rem; /* Button text size */
-            font-weight: 500; /* Medium font weight */
-            margin-top: 1.5rem; /* Space above button */
-            transition: background 0.3s ease; /* Smooth transition for hover effect */
+            background: #ef4444;
+            margin-top: 0.5rem;
         }
         .logout-button:hover {
-            background: #dc2626; /* Darker red on hover */
+            background: #dc2626;
         }
     </style>
 </head>
@@ -64,7 +75,8 @@
             <p><strong>Username:</strong> <span id="profileUsername">Loading...</span></p>
             <p><strong>Email:</strong> <span id="profileEmail">Loading...</span></p>
         </div>
-        <button id="logoutButton" class="logout-button">Logout</button>
+        <button id="manageContactsButton" class="button manage-contacts-button">Manage Contacts</button>
+        <button id="logoutButton" class="button logout-button">Logout</button>
     </div>
 
     <script>
@@ -72,10 +84,11 @@
             const profileUsername = document.getElementById('profileUsername');
             const profileEmail = document.getElementById('profileEmail');
             const logoutButton = document.getElementById('logoutButton');
+            const manageContactsButton = document.getElementById('manageContactsButton');
 
-            // Retrieve user data from localStorage
-            const userEmail = localStorage.getItem('userEmail');
-            const userName = localStorage.getItem('userName');
+            // Retrieve user data from localStorage (using in-memory storage for this example)
+            const userEmail = 'user@example.com'; // Replace with actual user data
+            const userName = 'John Doe'; // Replace with actual user data
 
             if (userEmail && userName) {
                 // Display user data
@@ -84,18 +97,30 @@
             } else {
                 // If no user data, redirect to login page
                 alert('You are not logged in. Please log in to view your profile.');
-                window.location.href = 'auth.html';
+                window.location.href = 'index.html';
             }
 
-            // Logout functionality
-            logoutButton.addEventListener('click', function() {
-                // Clear user data from localStorage
-                localStorage.removeItem('userEmail');
-                localStorage.removeItem('userName');
-                alert('You have been logged out.');
-                // Redirect to login page
-                window.location.href = 'auth.html';
+            // Manage Contacts button functionality
+            manageContactsButton.addEventListener('click', function() {
+
+                const bitrix24ContactsUrl = 'http://localhost:8080/contacts_dashboard.html';
+                window.open(bitrix24ContactsUrl, '_blank');
             });
+
+             logoutButton.addEventListener('click', function () {
+        // ✅ Clear in-memory user data
+        currentUser = null;
+
+        // ✅ Clear localStorage/sessionStorage if used
+        localStorage.removeItem('user');
+        sessionStorage.clear();
+
+        // ✅ Show confirmation
+        alert('You have been logged out.');
+
+        // ✅ Redirect to login page
+        window.location.href = 'auth.html';
+    });
         });
     </script> 
 </body>

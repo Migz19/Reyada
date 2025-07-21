@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Deal Details</title>
+    <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 2em;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 1.5em;
+    }
+
+    #dealInfo {
+      background-color: #ffffff;
+      padding: 1.5em;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      max-width: 600px;
+      margin: 0 auto 2em;
+    }
+
+    label {
+      display: block;
+      max-width: 600px;
+      margin: 1em auto 0.5em;
+      font-weight: 500;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 600px;
+      display: block;
+      margin: 0 auto;
+      padding: 0.6em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    button {
+      display: block;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.7em 1.5em;
+      font-size: 1em;
+      margin: 1.5em auto;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #wonCheckbox {
+      transform: scale(1.2);
+      margin-right: 0.5em;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 500;
+    }
+
+    p {
+      margin: 0.3em 0;
+      font-size: 1em;
+    }
+
+    strong {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+<h1>Deal Details</h1>
+<div id="dealInfo">Loading…</div>
+
+<label for="contractInput">Contract:</label>
+<input type="text" id="contractInput" placeholder="Enter contract info" />
+
+<label for="taxIdInput">Tax Registration ID:</label>
+<input type="text" id="taxIdInput" placeholder="Enter tax ID" />
+
+<button id="saveBtn">Save Updates</button>
+
+<div class="checkbox-wrapper">
+    <input type="checkbox" id="wonCheckbox" />
+    <label for="wonCheckbox">Mark as “Deal won”</label>
+</div>
+
+<script>
+    const params = new URLSearchParams(location.search);
+    const id     = params.get('id');
+    if (!id) {
+      document.getElementById('dealInfo').textContent = 'No deal ID provided';
+      throw new Error('No id');
+    }
+
+    // 1) Load deal details
+    let deal;
+    fetch(`/d/${id}`)
+      .then(r => r.json())
+      .then(d => {
+        deal = d;
+        const info = document.getElementById('dealInfo');
+        info.innerHTML = `
+          <p><strong>ID:</strong> ${d.ID}</p>
+          <p><strong>Title:</strong> ${d.TITLE}</p>
+          <p><strong>Stage:</strong> ${d.STAGE_ID}</p>
+          <p><strong>Opportunity:</strong> ${d.OPPORTUNITY}</p>
+          <p><strong>Created:</strong> ${d.DATE_CREATE}</p>
+        `;
+        document.getElementById('contractInput').value = d.contract || '';
+        document.getElementById('taxIdInput').value   = d.taxRegistrationId || '';
+        document.getElementById('wonCheckbox').checked = (d.STAGE_ID === 'Deal won');
+      });
+
+    // 2) Save updates
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const body = {
+        contract: document.getElementById('contractInput').value,
+        taxRegistrationId: document.getElementById('taxIdInput').value
+      };
+      fetch(`/d/${id}`, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(body)
+      }).then(r => {
+        if (r.ok) alert('Deal updated');
+        else     alert('Update failed');
+      });
+    });
+
+    // 3) Mark as “Deal won”
+    document.getElementById('wonCheckbox').addEventListener('change', e => {
+      if (e.target.checked) {
+        fetch(`/d/${id}/won`, { method: 'POST' })
+          .then(r => {
+            if (r.ok) alert('Stage set to Deal won');
+            else     alert('Could not update stage');
+          });
+      }
+    });
+  </script>
+</body>
+</html>

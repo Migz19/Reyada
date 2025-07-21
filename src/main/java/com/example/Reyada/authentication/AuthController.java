@@ -1,7 +1,9 @@
 package com.example.Reyada.authentication;
 
-import com.example.Reyada.authentication.entities.MyUser;
+import com.example.Reyada.authentication.dto.LoginRequest;
+import com.example.Reyada.authentication.data.MyUser;
 import com.example.Reyada.authentication.exception.EmailAlreadyExistsException;
+import com.example.Reyada.authentication.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +34,6 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
        return authService.login(request);
     }
+
 
 }

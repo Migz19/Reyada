@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>All Deals</title>
+    <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 2em;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1em;
+      color: #2c3e50;
+    }
+
+    #dealsList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5em;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    li {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 1em;
+      transition: transform 0.2s ease;
+    }
+
+    li:hover {
+      transform: translateY(-5px);
+    }
+
+    a {
+      display: block;
+      text-decoration: none;
+      color: #2980b9;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .stage {
+      display: inline-block;
+      font-size: 0.85em;
+      padding: 0.2em 0.5em;
+      margin-bottom: 0.5em;
+      background-color: #dff0d8;
+      color: #3c763d;
+      border-radius: 5px;
+    }
+
+    .deal-title {
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+<h1>All Deals</h1>
+<ul id="dealsList">Loading…</ul>
+
+<script>
+    fetch('/d/deals')
+      .then(r => r.json())
+      .then(deals => {
+        const ul = document.getElementById('dealsList');
+        ul.innerHTML = '';
+        deals.forEach(d => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = `deal.html?id=${d.ID}`;
+
+          const stage = document.createElement('div');
+          stage.className = 'stage';
+          stage.textContent = d.STAGE_ID;
+
+          const title = document.createElement('div');
+          title.className = 'deal-title';
+          title.textContent = `${d.TITLE} (ID: ${d.ID})`;
+
+          a.appendChild(stage);
+          a.appendChild(title);
+
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+      })
+      .catch(err => {
+        document.getElementById('dealsList').textContent = 'Error loading deals';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>

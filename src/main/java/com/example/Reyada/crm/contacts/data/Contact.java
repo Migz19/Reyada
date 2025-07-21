@@ -1,4 +1,4 @@
-package com.example.Reyada;
+package com.example.Reyada.crm.contacts.data;
 
 import jakarta.persistence.*;
 

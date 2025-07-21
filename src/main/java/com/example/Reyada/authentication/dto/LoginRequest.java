@@ -1,4 +1,4 @@
-package com.example.Reyada.authentication;
+package com.example.Reyada.authentication.dto;
 
 public class LoginRequest {
     private String email,password;

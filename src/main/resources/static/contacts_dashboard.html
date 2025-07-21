@@ -571,34 +571,34 @@
             }
         }
 
-        async function addNewContact(contactData) {
-            try {
-                const response = await fetch(ADD_CONTACT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        fields: contactData
-                    })
-                });
+     async function addNewContact(contactData) {
+    try {
+        const response = await fetch(ADD_CONTACT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // ✅ Removed the "fields" wrapper here
+            body: JSON.stringify(contactData)
+        });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                if (result.error) {
-                    throw new Error(result.error_description || 'Failed to add contact');
-                }
-
-                return result;
-            } catch (error) {
-                console.error('Error adding contact:', error);
-                throw error;
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const result = await response.json();
+
+        if (result.error) {
+            throw new Error(result.error_description || 'Failed to add contact');
+        }
+
+        return result;
+    } catch (error) {
+        console.error('Error adding contact:', error);
+        throw error;
+    }
+}
+
 
         // Handle form submission
         document.getElementById('addContactForm').addEventListener('submit', async function(e) {

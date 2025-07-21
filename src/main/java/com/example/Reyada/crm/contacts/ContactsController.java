@@ -1,11 +1,11 @@
-package com.example.Reyada;
+package com.example.Reyada.crm.contacts;
 
+import com.example.Reyada.crm.contacts.data.Contact;
+import com.example.Reyada.crm.contacts.service.ContactsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 

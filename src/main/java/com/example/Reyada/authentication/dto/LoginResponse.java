@@ -1,4 +1,4 @@
-package com.example.Reyada.authentication.config;
+package com.example.Reyada.authentication.dto;
 
 public class LoginResponse {
 
