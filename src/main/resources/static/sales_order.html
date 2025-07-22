@@ -13,6 +13,7 @@
     }
 
     h1 {
+
       text-align: center;
       margin-bottom: 1em;
       color: #2c3e50;
@@ -70,7 +71,7 @@
 <ul id="dealsList">Loading…</ul>
 
 <script>
-    fetch('/d/deals')
+    fetch('/crm/deals')
       .then(r => r.json())
       .then(deals => {
         const ul = document.getElementById('dealsList');

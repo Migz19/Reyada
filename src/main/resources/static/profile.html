@@ -79,49 +79,43 @@
         <button id="logoutButton" class="button logout-button">Logout</button>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileUsername = document.getElementById('profileUsername');
-            const profileEmail = document.getElementById('profileEmail');
-            const logoutButton = document.getElementById('logoutButton');
-            const manageContactsButton = document.getElementById('manageContactsButton');
+    <script><script>
+document.addEventListener('DOMContentLoaded', () => {
+  const profileUsername       = document.getElementById('profileUsername');
+  const profileEmail          = document.getElementById('profileEmail');
+  const logoutButton          = document.getElementById('logoutButton');
+  const manageContactsButton  = document.getElementById('manageContactsButton');
 
-            // Retrieve user data from localStorage (using in-memory storage for this example)
-            const userEmail = 'user@example.com'; // Replace with actual user data
-            const userName = 'John Doe'; // Replace with actual user data
+  fetch('/auth/user', {
+    method: 'GET',
+    credentials: 'include'
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Not authenticated');
+    return res.json();
+  })
+  .then(data => {
+    console.log("💾 Got user:", data);
+    // make sure these match the JSON keys exactly
+    profileUsername.textContent = data.name  || data.email  || 'Unknown';
+    profileEmail.textContent    = data.email || 'Unknown';
+  })
+  .catch(err => {
+    alert('Please log in first.');
+    window.location.href = 'auth.html';
+  });
 
-            if (userEmail && userName) {
-                // Display user data
-                profileUsername.textContent = userName;
-                profileEmail.textContent = userEmail;
-            } else {
-                // If no user data, redirect to login page
-                alert('You are not logged in. Please log in to view your profile.');
-                window.location.href = 'index.html';
-            }
+  logoutButton.addEventListener('click', () => {
+    fetch('/logout', { method:'POST', credentials:'include' })
+      .then(() => window.location.href = 'auth.html');
+  });
 
-            // Manage Contacts button functionality
-            manageContactsButton.addEventListener('click', function() {
+  manageContactsButton.addEventListener('click', () => {
+    window.open('contacts_dashboard.html','_blank');
+  });
+});
+</script>
 
-                const bitrix24ContactsUrl = 'http://localhost:8080/contacts_dashboard.html';
-                window.open(bitrix24ContactsUrl, '_blank');
-            });
 
-             logoutButton.addEventListener('click', function () {
-        // ✅ Clear in-memory user data
-        currentUser = null;
-
-        // ✅ Clear localStorage/sessionStorage if used
-        localStorage.removeItem('user');
-        sessionStorage.clear();
-
-        // ✅ Show confirmation
-        alert('You have been logged out.');
-
-        // ✅ Redirect to login page
-        window.location.href = 'auth.html';
-    });
-        });
-    </script> 
 </body>
 </html>

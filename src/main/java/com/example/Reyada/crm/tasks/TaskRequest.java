@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TaskRequest {
     @JsonProperty("TITLE")
     private String title;
-    @JsonProperty("DEADLINE") // lowercase to match JS
+    @JsonProperty("DEADLINE")
     private String deadline;
 
-    @JsonProperty("RESPONSIBLE_ID")// lowercase to match JS
+    @JsonProperty("RESPONSIBLE_ID")
     private int responsibleId;
 
     public TaskRequest() {

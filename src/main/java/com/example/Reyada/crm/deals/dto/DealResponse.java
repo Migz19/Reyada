@@ -1,4 +1,4 @@
-package com.example.Reyada.crm.deals;
+package com.example.Reyada.crm.deals.dto;
 
 import com.example.Reyada.crm.deals.data.Deal;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,6 +10,5 @@ public class DealResponse {
     private Deal[] result;
 
     public Deal[] getResult() { return result; }
-    public void setResult(Deal[] result) { this.result = result; }
 }
 

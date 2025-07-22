@@ -1,12 +1,10 @@
 package com.example.Reyada.crm.tasks;
 
 import com.example.Reyada.crm.deals.data.DealsRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,26 +34,21 @@ public class TasksServices {
                 webhook);
         System.out.println(" 3424324 Creating task with URL: " + url);
         Map<String, Object> fields = new HashMap<>();
-        fields.put("TITLE", request.getTitle());
-//
-//        fields.put("CREATED_BY",userId);
+        fields.put("TITLE", request.getTitle());;
         fields.put("RESPONSIBLE_ID", request.getResponsibleId());
         fields.put("DEADLINE",request.getDeadline());
-        System.out.println(" 3424324 Creating task with fields: " + fields);
         Map<String, Object> payload = Map.of("fields", fields);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
-        System.out.println(" 3424324 Creating task with entity: " + entity.getBody());
         ResponseEntity<String> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 entity,
                 String.class
         );
-        System.out.println(" 3424324 Creating task with response: " + response.getBody());
         return response.getBody();
     }
 

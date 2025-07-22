@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/d")
+@RequestMapping("/crm/deals")
 public class DealsController {
     @Autowired
     private DealsServices dealsService;
 
-    @GetMapping("deals")
+    @GetMapping("")
     public ResponseEntity<?> getDeals(@RequestParam(defaultValue = "UC_3MCI1C") String stageId) {
         try {
             List<Deal> deals = dealsService.fetchDeals(stageId);
@@ -34,7 +34,7 @@ public class DealsController {
     public Deal getOne(@PathVariable Long id) {
         return dealsService.fetchDealById(id);
     }
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public void update(
             @PathVariable Long id,
             @RequestBody UpdateRequest req

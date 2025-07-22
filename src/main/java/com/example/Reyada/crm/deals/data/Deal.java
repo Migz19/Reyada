@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Deal {
 
     @Id
-  //  @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("ID")
     private Long id;
 
