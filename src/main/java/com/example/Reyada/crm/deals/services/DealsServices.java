@@ -1,5 +1,6 @@
 package com.example.Reyada.crm.deals.services;
 
+import com.example.Reyada.crm.deals.DealDefaults;
 import com.example.Reyada.crm.deals.dto.DealResponse;
 import com.example.Reyada.crm.deals.data.Deal;
 import com.example.Reyada.crm.deals.data.DealsRepo;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DealsServices {
@@ -49,8 +51,9 @@ public class DealsServices {
         params.add("select[]", "ID");
         params.add("select[]", "TITLE");
         params.add("select[]", "STAGE_ID");
-
+        params.add("select[]","TYPE_ID");
         params.add("select[]", "ASSIGNED_BY_ID");
+        params.add("select[]","CATEGORY_ID");
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         System.out.println("Filtering deals for stage ID: " + stageId);
@@ -59,8 +62,10 @@ public class DealsServices {
             DealResponse resp = restTemplate.postForObject(url, request, DealResponse.class);
             if (resp != null && resp.getResult() != null) {
                 List<Deal> deals = Arrays.asList(resp.getResult());
-
-                return deals;
+                // Apply default values for null fields
+                return deals.stream()
+                        .map(this::applyDealDefaults)
+                        .collect(Collectors.toList());
             }
         } catch (Exception e) {
             System.err.println("Error fetching deals: " + e.getMessage());
@@ -128,7 +133,22 @@ public class DealsServices {
 
         return repo.save(deal);
     }
+    // Updated method
+    private Deal applyDealDefaults(Deal deal) {
+        if (deal == null) return null;
 
+        deal.setId(deal.getId() != null ? deal.getId() : DealDefaults.DEFAULT_ID);
+        deal.setTitle(deal.getTitle() != null && !deal.getTitle().trim().isEmpty() ?
+                deal.getTitle() : DealDefaults.DEFAULT_TITLE);
+        deal.setStageId(deal.getStageId() != null ? deal.getStageId() : DealDefaults.DEFAULT_STAGE_ID);
+        deal.setTypeId(deal.getTypeId() != null ? deal.getTypeId() : DealDefaults.DEFAULT_TYPE_ID);
+        deal.setAssignedById(deal.getAssignedById() != null ?
+                deal.getAssignedById() : DealDefaults.DEFAULT_ASSIGNED_BY_ID);
+        deal.setCategoryId(deal.getCategoryId() != null ?
+                deal.getCategoryId() : DealDefaults.DEFAULT_CATEGORY_ID);
+
+        return deal;
+    }
 
 }
 

@@ -121,7 +121,7 @@
 
             // 1) Load deal details
             console.log('Fetching deal details...');
-            fetch(`/d/${id}`)
+            fetch(`/crm/deals/${id}`)
                 .then(r => {
                     console.log('Deal fetch response status:', r.status);
                     return r.json();
@@ -161,7 +161,7 @@
 
                 console.log('Saving deal updates:', body);
 
-                fetch(`/d/${id}`, {
+                fetch(`/crm/deals/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
@@ -216,7 +216,7 @@
                     console.log('8.2. Stringified payload:', JSON.stringify(taskPayload));
                     console.log('9. About to make fetch request to api/tasks/create...');
 
-                    const taskResp = await fetch('http://localhost:8080/api/tasks/create', {
+                    const taskResp = await fetch('http://localhost:8080/crm/tasks/create', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(taskPayload)
@@ -236,7 +236,7 @@
                     console.log('11. Task created successfully, now marking deal as won...');
 
                     // B) Now mark deal as won
-                    const winResp = await fetch(`/d/${id}/won`, { method: 'POST' });
+                    const winResp = await fetch(`/crm/deals/${id}/won`, { method: 'POST' });
                     console.log('Deal-won endpoint status:', winResp.status);
 
                     if (!winResp.ok) {

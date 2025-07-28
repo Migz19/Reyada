@@ -60,6 +60,17 @@ public class Contact {
         return lastName;
     }
 
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthdate=" + birthdate +
+                '}';
+    }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }

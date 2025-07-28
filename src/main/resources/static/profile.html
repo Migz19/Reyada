@@ -53,11 +53,11 @@
             box-sizing: border-box;
         }
         .manage-contacts-button {
-            background: #3b82f6; /* Blue background */
+            background: #3b82f6;
             margin-top: 1.5rem;
         }
         .manage-contacts-button:hover {
-            background: #2563eb; /* Darker blue on hover */
+            background: #2563eb;
         }
         .logout-button {
             background: #ef4444;
@@ -66,56 +66,127 @@
         .logout-button:hover {
             background: #dc2626;
         }
+        .status-message {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
     </style>
 </head>
 <body>
-    <div class="profile-card">
-        <h1>User Profile</h1>
-        <div class="profile-info">
-            <p><strong>Username:</strong> <span id="profileUsername">Loading...</span></p>
-            <p><strong>Email:</strong> <span id="profileEmail">Loading...</span></p>
-        </div>
-        <button id="manageContactsButton" class="button manage-contacts-button">Manage Contacts</button>
-        <button id="logoutButton" class="button logout-button">Logout</button>
+<div class="profile-card">
+    <h1>User Profile</h1>
+    <div class="profile-info">
+        <p><strong>Username:</strong> <span id="profileUsername">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="profileEmail">Loading...</span></p>
     </div>
+    <button id="manageContactsButton" class="button manage-contacts-button">Manage Contacts</button>
+    <button id="logoutButton" class="button logout-button">Logout</button>
 
-    <script><script>
+    <div id="statusMessage" class="status-message" style="display: none;"></div>
+</div>
+
+<script>
 document.addEventListener('DOMContentLoaded', () => {
-  const profileUsername       = document.getElementById('profileUsername');
-  const profileEmail          = document.getElementById('profileEmail');
-  const logoutButton          = document.getElementById('logoutButton');
-  const manageContactsButton  = document.getElementById('manageContactsButton');
+  const profileUsername = document.getElementById('profileUsername');
+  const profileEmail = document.getElementById('profileEmail');
+  const logoutButton = document.getElementById('logoutButton');
+  const manageContactsButton = document.getElementById('manageContactsButton');
+  const statusMessage = document.getElementById('statusMessage');
 
-  fetch('/auth/user', {
-    method: 'GET',
-    credentials: 'include'
-  })
-  .then(res => {
-    if (!res.ok) throw new Error('Not authenticated');
-    return res.json();
-  })
-  .then(data => {
-    console.log("💾 Got user:", data);
-    // make sure these match the JSON keys exactly
-    profileUsername.textContent = data.name  || data.email  || 'Unknown';
-    profileEmail.textContent    = data.email || 'Unknown';
-  })
-  .catch(err => {
-    alert('Please log in first.');
-    window.location.href = 'auth.html';
-  });
+  // Function to show status messages
+  function showStatus(message, isError = false) {
+    statusMessage.textContent = message;
+    statusMessage.className = `status-message ${isError ? 'status-error' : 'status-success'}`;
+    statusMessage.style.display = 'block';
 
+    setTimeout(() => {
+      statusMessage.style.display = 'none';
+    }, 3000);
+  }
+
+  // Load user profile from backend
+  function loadUserProfile() {
+    fetch('/auth/user', {
+      method: 'GET',
+      credentials: 'include'
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Not authenticated');
+      return res.json();
+    })
+    .then(data => {
+      console.log("💾 Got user:", data);
+      profileUsername.textContent = data.name || data.email || 'Unknown';
+      profileEmail.textContent = data.email || 'Unknown';
+      showStatus('Profile loaded successfully!');
+    })
+    .catch(err => {
+      console.error('Error loading profile:', err);
+      showStatus('Please log in first.', true);
+      setTimeout(() => {
+        window.location.href = 'auth.html';
+      }, 2000);
+    });
+  }
+
+  // Load user profile on page load
+  loadUserProfile();
+
+  // Logout button handler
   logoutButton.addEventListener('click', () => {
-    fetch('/logout', { method:'POST', credentials:'include' })
-      .then(() => window.location.href = 'auth.html');
+    console.log('Logout button clicked');
+    showStatus('Logging out...');
+
+    fetch('/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+    .then(response => {
+      if (response.ok) {
+        showStatus('Logged out successfully!');
+        setTimeout(() => {
+          window.location.href = 'auth.html';
+        }, 1000);
+      } else {
+        throw new Error('Logout failed');
+      }
+    })
+    .catch(err => {
+      console.error('Logout error:', err);
+      showStatus('Logout failed. Please try again.', true);
+    });
   });
 
+  // Manage contacts button handler
   manageContactsButton.addEventListener('click', () => {
-    window.open('contacts_dashboard.html','_blank');
+    console.log('Manage Contacts button clicked');
+    showStatus('Opening contacts dashboard...');
+
+    // Open contacts dashboard in new tab
+    window.open('contacts_dashboard.html', '_blank');
+  });
+
+  // Add some debugging
+  console.log('Event listeners attached');
+  console.log('Profile elements found:', {
+    username: !!profileUsername,
+    email: !!profileEmail,
+    logoutBtn: !!logoutButton,
+    contactsBtn: !!manageContactsButton
   });
 });
-</script>
-
-
+    </script>
 </body>
 </html>

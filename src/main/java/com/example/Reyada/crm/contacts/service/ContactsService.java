@@ -1,16 +1,17 @@
 package com.example.Reyada.crm.contacts.service;
 
+import com.example.Reyada.crm.contacts.ContactsDTO;
 import com.example.Reyada.crm.contacts.data.Contact;
 import com.example.Reyada.crm.contacts.data.ContactsRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -52,51 +53,44 @@ public class ContactsService {
         return restTemplate.postForObject(webhookUrl,request,String.class);
     }
 
-    public List<Contact> getAllContacts() {
-
-        List<Map<String, Object>> bitrixContacts = fetchContactsFromBitrix();
+    public List<Contact> fetchContractsOrderedByDate() {
 
 
-        List<Contact> contacts = new ArrayList<>();
-        for (Map<String, Object> data : bitrixContacts) {
-            Contact contact = new Contact();
-            contact.setId(Long.valueOf(data.get("ID").toString()));
-            contact.setName((String) data.get("NAME"));
-            contact.setLastName((String) data.get("LAST_NAME"));
 
-            contact.setSecondName((String) data.get("SECOND_NAME"));
-            contacts.add(contact);
+        //contactsRepo.saveAll(fetchContactsFromBitrix());
+
+
+        for (
+                Contact contact : fetchContactsFromBitrix()) {
+            System.out.println(contact.toString());
         }
 
-
-        contactsRepo.saveAll(contacts);
-
-
-        return contactsRepo.findAll();
+        return contactsRepo.findAllByOrderByBirthdateAsc();
     }
 
 
-    private List<Map<String, Object>> fetchContactsFromBitrix() {
-        List<Map<String, Object>> allContacts = new ArrayList<>();
+    private ArrayList<Contact> fetchContactsFromBitrix() {
+
         int start = 0;
+        ArrayList<Contact> bitrixContacts = new ArrayList<>();
+        do {
 
-        while (true) {
-            String url = "https://b24-0r8mng.bitrix24.com/rest/1/iolappou7w3kdu2w/crm.contact.list.json";
-            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-            Map<String, Object> body = response.getBody();
+            String url = UriComponentsBuilder
+                    .fromHttpUrl("https://b24-0r8mng.bitrix24.com/rest/1/iolappou7w3kdu2w/crm.contact.list.json")
+                    .queryParam("start", start)
+                    .toUriString();
+            ResponseEntity<ContactsDTO> response = restTemplate.getForEntity(url, ContactsDTO.class);
+            if (response.getBody().getResult() == null || response.getBody().getResult().isEmpty()) {
+                break;
+            }
+            bitrixContacts.addAll(response.getBody().getResult());
+            start = (response.getBody().getNext() == null ? 0 : response.getBody().getNext());
+            System.out.println("Fetched " + response.getBody().getResult() + " contacts, next start: " + start);
+        }while (start > 0);
 
-            if (body == null || !body.containsKey("result")) break;
 
-            List<Map<String, Object>> result = (List<Map<String, Object>>) body.get("result");
-            if (result.isEmpty()) break;
-
-            allContacts.addAll(result);
-
-            if (!body.containsKey("next")) break;
-            start = (int) body.get("next");
-        }
-
-        return allContacts;
+        System.out.println(bitrixContacts.toString());
+        return bitrixContacts;
     }
 }
 

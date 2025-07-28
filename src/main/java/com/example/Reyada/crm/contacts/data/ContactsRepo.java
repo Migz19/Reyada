@@ -2,6 +2,8 @@ package com.example.Reyada.crm.contacts.data;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContactsRepo extends JpaRepository<Contact, Long>{
+import java.util.List;
 
+public interface ContactsRepo extends JpaRepository<Contact, Long>{
+        List<Contact> findAllByOrderByBirthdateAsc(); // Method to find all contacts ordered by name in ascending order
 }

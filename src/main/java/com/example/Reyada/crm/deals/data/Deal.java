@@ -16,31 +16,31 @@ public class Deal {
     @JsonProperty("ID")
     private Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = true)
     @JsonProperty("TITLE")
     private String title;
 
-    @Column(name = "type_id", nullable = false)
+    @Column(name = "type_id", nullable = true)
     @JsonProperty("TYPE_ID")
     private String typeId;
 
-    @Column(name = "category_id", nullable = false)
+    @Column(name = "category_id", nullable = true)
     @JsonProperty("CATEGORY_ID")
     private String categoryId;
 
-    @Column(name = "stage_id", nullable = false)
+    @Column(name = "stage_id", nullable = true)
     @JsonProperty("STAGE_ID")
     private String stageId;
 
-    @Column(name = "opportunity", nullable = false)
+    @Column(name = "opportunity", nullable = true)
     @JsonProperty("OPPORTUNITY")
     private Double opportunity;
 
-    @Column(name = "is_manual_opportunity", nullable = false)
+    @Column(name = "is_manual_opportunity", nullable = true)
     @JsonProperty("IS_MANUAL_OPPORTUNITY")
     private String isManualOpportunity;
 
-    @Column(name = "assigned_by_id", nullable = false)
+    @Column(name = "assigned_by_id", nullable = true)
     @JsonProperty("ASSIGNED_BY_ID")
     private String assignedById;
 

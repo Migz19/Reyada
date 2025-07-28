@@ -21,7 +21,7 @@ public class ContactsController {
     @GetMapping("/contacts")
     public ResponseEntity<List<Contact>> getContacts() {
 
-       List<Contact> saved = contactsService.getAllContacts();
+       List<Contact> saved = contactsService.fetchContractsOrderedByDate();
         return ResponseEntity.ok(saved);
     }
 

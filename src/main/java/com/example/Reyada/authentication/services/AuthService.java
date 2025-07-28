@@ -61,6 +61,7 @@ public class AuthService {
 
     public ResponseEntity<MyUser> fetchUserDetails(String email){
         System.out.println(authRepo.findByEmail(email).toString());
+
        return ResponseEntity.ok( authRepo.findByEmail(email));
     }
 }
