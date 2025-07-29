@@ -19,10 +19,10 @@ public class ContactsController {
         this.contactsService = contactsService;
     }
     @GetMapping("/contacts")
-    public ResponseEntity<List<Contact>> getContacts() {
-
-       List<Contact> saved = contactsService.fetchContractsOrderedByDate();
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<Map<String, Object>> getContacts() {
+        List<Contact> contacts = contactsService.getContacts();
+        Map<String, Object> response = Map.of("result", contacts);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/addContact")

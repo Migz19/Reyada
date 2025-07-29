@@ -521,22 +521,22 @@
 
             try {
                 const response = await fetch(API_URL);
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
-                
+
                 if (data.error) {
                     throw new Error(data.error_description || 'API Error');
                 }
 
                 allContacts = data.result || [];
                 filteredContacts = [...allContacts];
-                
+
                 loading.style.display = 'none';
-                
+
                 if (allContacts.length === 0) {
                     contactsGrid.innerHTML = '<div class="no-results">No contacts found</div>';
                 } else {
@@ -603,15 +603,15 @@
         // Handle form submission
         document.getElementById('addContactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(e.target);
             const submitButton = e.target.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
-            
+
             // Show loading state
             submitButton.textContent = 'Adding...';
             submitButton.disabled = true;
-            
+
             try {
                 const contactData = {
                     NAME: formData.get('firstName'),
@@ -625,11 +625,11 @@
                 };
 
                 await addNewContact(contactData);
-                
+
                 // Success - close modal and refresh contacts
                 closeAddContactModal();
                 await loadContacts(); // Refresh the contact list
-                
+
                 // Show success message
                 const successMsg = document.createElement('div');
                 successMsg.className = 'success';
@@ -644,7 +644,7 @@
                 `;
                 successMsg.textContent = 'Contact added successfully!';
                 document.querySelector('.container').insertBefore(successMsg, document.querySelector('.search-container'));
-                
+
                 // Remove success message after 3 seconds
                 setTimeout(() => {
                     successMsg.remove();
@@ -657,7 +657,7 @@
                 errorMsg.style.display = 'block';
                 errorMsg.textContent = `Error adding contact: ${error.message}`;
                 document.querySelector('.modal-content').appendChild(errorMsg);
-                
+
                 // Remove error message after 5 seconds
                 setTimeout(() => {
                     errorMsg.remove();
@@ -698,17 +698,17 @@
 
         function displayContacts(contacts) {
             const contactsGrid = document.getElementById('contactsGrid');
-            
+
             if (contacts.length === 0) {
                 contactsGrid.innerHTML = '<div class="no-results">No contacts match your search</div>';
                 return;
             }
 
             contactsGrid.innerHTML = contacts.map(contact => {
-                const name = `${contact.NAME || ''} ${contact.SECOND_NAME ? contact.SECOND_NAME + ' ' : ''}${contact.LAST_NAME || ''}`.trim() || 'No Name';
+                const name = `${contact.Name || ''} ${contact.SecondName ? contact.SecondName + ' ' : ''}${contact.LastName || ''}`.trim() || 'No Name';
                 const hasEmail = contact.HAS_EMAIL === 'Y' ? 'Yes' : 'No';
                 const hasPhone = contact.HAS_PHONE === 'Y' ? 'Yes' : 'No';
-                const birthdate = contact.BIRTHDATE ? new Date(contact.BIRTHDATE).toLocaleDateString() : 'No Birthdate';
+                const birthdate = contact.Birthdate ? new Date(contact.Birthdate).toLocaleDateString() : 'No Birthdate';
                 const contactType = contact.TYPE_ID || 'No Type';
                 const source = contact.SOURCE_ID || 'No Source';
 
@@ -739,13 +739,13 @@
         function filterContacts(searchTerm) {
             const term = searchTerm.toLowerCase();
             filteredContacts = allContacts.filter(contact => {
-                const name = `${contact.NAME || ''} ${contact.SECOND_NAME || ''} ${contact.LAST_NAME || ''}`.toLowerCase();
+                const name = `${contact.Name || ''} ${contact.SecondName || ''} ${contact.LastName || ''}`.toLowerCase();
                 const contactType = (contact.TYPE_ID || '').toLowerCase();
                 const source = (contact.SOURCE_ID || '').toLowerCase();
-                
+
                 return name.includes(term) || contactType.includes(term) || source.includes(term);
             });
-            
+
             displayContacts(filteredContacts);
         }
 

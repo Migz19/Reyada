@@ -5,15 +5,13 @@ import com.example.Reyada.crm.contacts.data.Contact;
 import com.example.Reyada.crm.contacts.data.ContactsRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +43,7 @@ public class ContactsService {
 
         HttpEntity<Map<String,Object>> request=new HttpEntity<>(contac,headers);
         Contact contact = new Contact();
+
         contact.setName((String) contac.get("NAME"));
         contact.setSecondName((String) contac.get("SECOND_NAME"));
         contact.setLastName((String) contac.get("LAST_NAME"));
@@ -53,44 +52,59 @@ public class ContactsService {
         return restTemplate.postForObject(webhookUrl,request,String.class);
     }
 
-    public List<Contact> fetchContractsOrderedByDate() {
+//    public List<Contact> fetchContractsOrderedByDate() {
+//
+//
+//        return contactsRepo.findAllByOrderByBirthdateAsc();
+//    }
 
 
+    public void fetchContactsFromBitrix() {
 
-        //contactsRepo.saveAll(fetchContactsFromBitrix());
 
+            String url ="https://b24-0r8mng.bitrix24.com/rest/1/iolappou7w3kdu2w/crm.contact.list.json";
+        Map<String, Object> request = Map.of(
+                "SELECT", List.of("ID", "NAME", "SECOND_NAME", "LAST_NAME", "BIRTHDATE")
+        );
 
-        for (
-                Contact contact : fetchContactsFromBitrix()) {
-            System.out.println(contact.toString());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            List<Map<String, Object>> result = (List<Map<String, Object>>) response.getBody().get("result");
+
+            List<Contact> contacts = result.stream().map(this::mapToEntity).toList();
+
+            contactsRepo.saveAll(contacts);
+        }
+    }
+    public List<Contact> getContacts() {
+        fetchContactsFromBitrix();
+        return contactsRepo.findAll();
+    }
+
+    private Contact mapToEntity(Map<String, Object> item) {
+        Contact contact = new Contact();
+        contact.setId(Long.valueOf((item.get("ID").toString())));
+        contact.setName((String) item.get("NAME"));
+        contact.setSecondName((String) item.get("SECOND_NAME"));
+        contact.setLastName((String) item.get("LAST_NAME"));
+
+        String birthdateStr = (String) item.get("BIRTHDATE");
+        if (birthdateStr != null && !birthdateStr.isEmpty()) {
+            try {
+                contact.setBirthdate(LocalDate.parse(birthdateStr));
+            } catch (DateTimeParseException e) {
+
+                contact.setBirthdate(null);
+            }
         }
 
-        return contactsRepo.findAllByOrderByBirthdateAsc();
-    }
-
-
-    private ArrayList<Contact> fetchContactsFromBitrix() {
-
-        int start = 0;
-        ArrayList<Contact> bitrixContacts = new ArrayList<>();
-        do {
-
-            String url = UriComponentsBuilder
-                    .fromHttpUrl("https://b24-0r8mng.bitrix24.com/rest/1/iolappou7w3kdu2w/crm.contact.list.json")
-                    .queryParam("start", start)
-                    .toUriString();
-            ResponseEntity<ContactsDTO> response = restTemplate.getForEntity(url, ContactsDTO.class);
-            if (response.getBody().getResult() == null || response.getBody().getResult().isEmpty()) {
-                break;
-            }
-            bitrixContacts.addAll(response.getBody().getResult());
-            start = (response.getBody().getNext() == null ? 0 : response.getBody().getNext());
-            System.out.println("Fetched " + response.getBody().getResult() + " contacts, next start: " + start);
-        }while (start > 0);
-
-
-        System.out.println(bitrixContacts.toString());
-        return bitrixContacts;
+        return contact;
     }
 }
+
 
