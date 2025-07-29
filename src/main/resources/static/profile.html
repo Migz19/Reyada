@@ -128,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(data => {
       console.log("💾 Got user:", data);
-      profileUsername.textContent = data.name || data.email || 'Unknown';
-      profileEmail.textContent = data.email || 'Unknown';
+      profileUsername.textContent = data.Name || data.Email || 'Unknown';
+      profileEmail.textContent = data.Email || 'Unknown';
       showStatus('Profile loaded successfully!');
     })
     .catch(err => {
