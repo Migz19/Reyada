@@ -38,7 +38,7 @@ public class DealsServices {
         this.repo = repo;
     }
 
-    public List<Deal> fetchDeals(String stageId) {
+    public List<Deal> fetchDeals() {
         String url = String.format("%s/rest/%s/%s/crm.deal.list",
                 bitrixBaseUrl, userId, webhook);
 
@@ -46,7 +46,7 @@ public class DealsServices {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("filter[=STAGE_ID]", stageId);
+
 
         params.add("select[]", "ID");
         params.add("select[]", "TITLE");
@@ -56,7 +56,7 @@ public class DealsServices {
         params.add("select[]","CATEGORY_ID");
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        System.out.println("Filtering deals for stage ID: " + stageId);
+
 
         try {
             DealResponse resp = restTemplate.postForObject(url, request, DealResponse.class);

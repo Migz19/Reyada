@@ -17,9 +17,11 @@ public class DealsController {
     private DealsServices dealsService;
 
     @GetMapping("")
-    public ResponseEntity<?> getDeals(@RequestParam(defaultValue = "UC_3MCI1C") String stageId) {
+    public ResponseEntity<?> getDeals() {
+        System.out.println("23807480273847u23984u79.");
         try {
-            List<Deal> deals = dealsService.fetchDeals(stageId);
+
+            List<Deal> deals = dealsService.fetchDeals();
             dealsService.addDealsTodb(deals);
             return ResponseEntity.ok(deals);
         } catch (Exception e) {

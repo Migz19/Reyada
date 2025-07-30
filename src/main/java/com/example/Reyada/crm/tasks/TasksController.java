@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/crm/tasks")
+@RequestMapping("/tasks")
 public class TasksController {
     @Autowired
     private TasksServices taskService;
@@ -19,4 +19,5 @@ public class TasksController {
         System.out.println("T5434534 " + result);
         return ResponseEntity.ok(result);
     }
+
 }
