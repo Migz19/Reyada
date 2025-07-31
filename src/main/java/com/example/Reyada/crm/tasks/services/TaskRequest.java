@@ -1,4 +1,4 @@
-package com.example.Reyada.crm.tasks;
+package com.example.Reyada.crm.tasks.services;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

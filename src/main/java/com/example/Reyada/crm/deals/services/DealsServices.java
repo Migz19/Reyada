@@ -104,7 +104,7 @@ public class DealsServices {
 
     public List<Deal> addDealsTodb(List<Deal> deals) {
 
-      return repo.saveAllAndFlush(deals);
+      return repo.saveAll(deals);
 
 
     }

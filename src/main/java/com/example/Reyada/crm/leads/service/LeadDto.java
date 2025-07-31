@@ -1,27 +1,18 @@
-package com.example.Reyada.crm.leads.data;
+package com.example.Reyada.crm.leads.service;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "leads")
-public class Lead {
-    @Id
+public class LeadDto {
     private Long id;
     private String title;
-    @Column(name = "status_id") private String statusId;
+    @JsonProperty("STATUS_ID") private String statusId;
     private BigDecimal opportunity;
-    @Column(name = "date_create")
-    private LocalDateTime dateCreate;
-
-    @Column(name = "date_closed")
-    private LocalDateTime dateClosed;
-    @Column(name = "assigned_by_id") private Long assignedById;
+    @JsonProperty("DATE_CREATE") private LocalDateTime dateCreate;
+    @JsonProperty("DATE_CLOSED") private LocalDateTime dateClosed;
+    @JsonProperty("ASSIGNED_BY_ID") private Long assignedById;
 
     public Long getId() {
         return id;

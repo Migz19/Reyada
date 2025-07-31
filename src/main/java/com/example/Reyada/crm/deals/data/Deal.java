@@ -2,7 +2,6 @@ package com.example.Reyada.crm.deals.data;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -45,15 +44,15 @@ public class Deal {
     @JsonProperty("ASSIGNED_BY_ID")
     private String assignedById;
 
-    @Column(name = "date_created", nullable = true)
+    @Column(name = "date_create", nullable = true)
     @JsonProperty("DATE_CREATE")
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
