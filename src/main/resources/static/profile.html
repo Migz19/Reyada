@@ -54,7 +54,14 @@
         }
         .manage-contacts-button {
             background: #3b82f6;
+            margin-top: 0.5rem;
+        }
+        .view-analytics-button {
+            background: #07f56e;
             margin-top: 1.5rem;
+        }
+            .view-analytics-button:hover {
+            background: #278327;
         }
         .manage-contacts-button:hover {
             background: #2563eb;
@@ -91,6 +98,7 @@
         <p><strong>Username:</strong> <span id="profileUsername">Loading...</span></p>
         <p><strong>Email:</strong> <span id="profileEmail">Loading...</span></p>
     </div>
+    <button id="viewAnalyticsButton" class="button view-analytics-button">View Analytics</button>
     <button id="manageContactsButton" class="button manage-contacts-button">Manage Contacts</button>
     <button id="logoutButton" class="button logout-button">Logout</button>
 
@@ -104,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutButton = document.getElementById('logoutButton');
   const manageContactsButton = document.getElementById('manageContactsButton');
   const statusMessage = document.getElementById('statusMessage');
+  const viewAnalyticsButton = document.getElementById('viewAnalyticsButton');
 
   // Function to show status messages
   function showStatus(message, isError = false) {
@@ -176,6 +185,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Open contacts dashboard in new tab
     window.open('contacts_dashboard.html', '_blank');
+  });
+
+   // View Analytics button handler
+  viewAnalyticsButton.addEventListener('click', () => {
+    console.log('view Analytics Button clicked');
+    showStatus('Opening Reyada Analytics dashboard...');
+
+    // Open Reyada Analytics dashboard in new tab
+    window.open('dashboard.html', '_blank');
   });
 
   // Add some debugging
