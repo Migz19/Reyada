@@ -269,35 +269,37 @@
 
     // API Signup function
     async function apiSignup(username, email, password) {
-        try {
-            console.log('Attempting signup with:', { username, email, password: '***' });
-            console.log('Sending request to:', SIGNUP_ENDPOINT);
+  try {
+    console.log('Attempting signup with:', { username, email, password: '***' });
+    console.log('Sending request to:', SIGNUP_ENDPOINT);
 
-            const response = await fetch(SIGNUP_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, email, password })
-            });
+    const response = await fetch(SIGNUP_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password })
+    });
 
-            console.log('Signup response status:', response.status);
-            console.log('Signup response headers:', response.headers);
+    console.log('Signup response status:', response.status);
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Signup success data:', data);
-                return { success: true, message: data.message || 'Signup successful' };
-            } else {
-                const errorData = await response.json();
-                console.log('Signup error data:', errorData);
-                return { success: false, message: errorData.message || 'Signup failed' };
-            }
-        } catch (error) {
-            console.error('API Signup error:', error);
-            return { success: false, message: 'Network error. Please try again.' };
-        }
+    // read as text, since your controller returns String
+    const message = await response.text();
+    console.log('Signup response body:', message);
+
+    if (response.ok) {                       // 201 Created → ok
+      return { success: true, message };
+    } else if (response.status === 409) {    // conflict
+      return { success: false, message };
+    } else {
+      return { success: false, message: message || 'Signup failed' };
     }
+  } catch (error) {
+    console.error('API Signup error:', error);
+    return { success: false, message: 'Network error. Please try again.' };
+  }
+}
+
 
     // Local fallback functions
     function localLogin(email, password) {
@@ -470,6 +472,7 @@
 
             // Always try API first (remove server check for debugging)
             console.log('Attempting API signup...');
+            console.log('4329892458 ${userEmail}');
             let result = await apiSignup(userName, userEmail, userPassword);
 
             if (result.success) {

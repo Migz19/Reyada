@@ -45,7 +45,7 @@ public class TasksServices {
                 bitrixBaseUrl,
                 userId,
                 webhook);
-        System.out.println(" 3424324 Creating task with URL: " + url);
+        //System.out.println(" 3424324 Creating task with URL: " + url);
         Map<String, Object> fields = new HashMap<>();
         fields.put("TITLE", request.getTitle());;
         fields.put("RESPONSIBLE_ID", request.getResponsibleId());

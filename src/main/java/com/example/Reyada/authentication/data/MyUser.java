@@ -1,5 +1,6 @@
 package com.example.Reyada.authentication.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,9 +12,11 @@ public class MyUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    @JsonProperty("email")
     private String email;
+    @JsonProperty("password")
     private String password;
+    @JsonProperty("username")
     private String name;
 
     // ✅ Required no-arg constructor

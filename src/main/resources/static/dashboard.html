@@ -658,43 +658,134 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td>Jun 15, 2023</td>
-                        <td>Monthly</td>
-                        <td>Office Supplies</td>
-                        <td>Printer ink and paper</td>
-                        <td>$245.50</td>
-                        <td>
-                            <button><i class="fas fa-edit"></i></button>
-                            <button><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jun 10, 2023</td>
-                        <td>Travel</td>
-                        <td>Client Meeting</td>
-                        <td>Flight and hotel for conference</td>
-                        <td>$1,250.00</td>
-                        <td>
-                            <button><i class="fas fa-edit"></i></button>
-                            <button><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jun 5, 2023</td>
-                        <td>Marketing</td>
-                        <td>Online Ads</td>
-                        <td>Google Ads campaign</td>
-                        <td>$750.00</td>
-                        <td>
-                            <button><i class="fas fa-edit"></i></button>
-                            <button><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
+                    <tbody id="expensesTableBody">
+                    <!-- rows will go here -->
                     </tbody>
                 </table>
             </div>
+            <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tbody = document.getElementById('expensesTableBody');
+
+    fetch('http://localhost:8080/crm/expenses')
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(expenses => {
+        // expenses should be an array of objects like:
+        // { id, date, type, category, description, amount }
+        expenses.forEach(exp => {
+          const tr = document.createElement('tr');
+
+          // format the date
+          const dt = new Date(exp.date);
+          const dateStr = dt.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
+
+          tr.innerHTML = `
+            <td>${dateStr}</td>
+            <td>${exp.type}</td>
+            <td>${exp.category}</td>
+            <td>${exp.description}</td>
+            <td>$${parseFloat(exp.amount).toFixed(2)}</td>
+            <td>
+              <button data-id="${exp.id}" class="edit-btn">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button data-id="${exp.id}" class="delete-btn">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error('Failed to fetch expenses:', err);
+        tbody.innerHTML = `<tr><td colspan="6">Failed to load expenses.</td></tr>`;
+      });
+
+    // You can also delegate click events for edit/delete:
+    tbody.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const id = btn.getAttribute('data-id');
+      if (btn.classList.contains('edit-btn')) {
+        // call your edit function
+        editExpense(id);
+      } else if (btn.classList.contains('delete-btn')) {
+        deleteExpense(id);
+      }
+    });
+  });
+
+</script>
+            <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('expenseForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // 1. Grab the basic fields
+      const date     = document.getElementById('expenseDate').value;
+      const type     = document.getElementById('expenseType').value;
+      const category = document.getElementById('expenseCategory').value;
+
+      // 2. Build the `fields` map from each .expense-field row
+      const fields = {};
+      document.querySelectorAll('.expense-field').forEach(row => {
+        const nameInput   = row.querySelector('input[type="text"]');
+        const amountInput = row.querySelector('input[type="number"]');
+        const key   = nameInput.value.trim();
+        const value = parseFloat(amountInput.value);
+        if (key && !isNaN(value)) {
+          fields[key] = value;
+        }
+      });
+
+      // 3. Construct payload
+      const payload = {
+        date,       // ISO date: "2025-07-31"
+        type,       // "daily" | "monthly" | "yearly"
+        category,   // e.g. "travel"
+        fields      // { "Printer ink": 245.50, ... }
+      };
+
+      try {
+        // 4. POST it!
+        const res = await fetch('http://localhost:8080/crm/expenses/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+        const created = await res.json();
+        console.log('Created expense:', created);
+
+        // 5. Optionally reset the form & UI feedback
+        form.reset();
+        // remove all dynamic fields except the first:
+        document.querySelectorAll('.expense-fields .expense-field').forEach((row, idx) => {
+          if (idx > 0) row.remove();
+        });
+        alert('Expense saved successfully!');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to save expense: ' + err.message);
+      }
+    });
+  });
+</script>
+
+
         </section>
 
         <!-- Financial Summary Section -->
