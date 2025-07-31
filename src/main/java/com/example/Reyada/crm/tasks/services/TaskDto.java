@@ -10,6 +10,18 @@ import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TaskDto {
+    @Override
+    public String toString() {
+        return "TaskDto{" +
+                "id=" + id +
+                ", dateClosed=" + dateClosed +
+                ", createdDate=" + createdDate +
+                ", deadline=" + deadline +
+                ", responsibleId=" + responsibleId +
+                ", realStatus=" + realStatus +
+                ", responsibleLastName='" + responsibleLastName + '\'' +
+                '}';
+    }
 
     private Long id;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")

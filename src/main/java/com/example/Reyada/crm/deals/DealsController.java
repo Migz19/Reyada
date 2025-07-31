@@ -19,14 +19,15 @@ public class DealsController {
     @GetMapping("")
     public ResponseEntity<?> getDeals() {
         System.out.println("23807480273847u23984u79.");
+        List<Deal> deals;
         try {
 
-            List<Deal> deals = dealsService.fetchDeals();
+          deals = dealsService.fetchDeals();
             dealsService.addDealsTodb(deals);
             return ResponseEntity.ok(deals);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+         deals= dealsService.fetchDealsOffline();
+            return ResponseEntity.ok(deals);
         }
     }
 

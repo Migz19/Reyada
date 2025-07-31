@@ -1,24 +1,31 @@
 package com.example.Reyada.crm.expenses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Map;
 
-@Entity(name = "Expenses")
+@Entity(name = "expenses")
 
 public class ExpenseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id ;
 
-
+    @JsonProperty("fields")
     @Column(columnDefinition = "JSON")            // MySQL JSON column
     @Convert(converter = MapToJsonConverter.class)
     private Map<String,Double> fields;
+    @JsonProperty("type")
     private String  type;
+
+    @JsonProperty("category")
     private String category;
-    private LocalDateTime date;
+    @JsonProperty("date")
+    private LocalDate date;
+
+
 
     public int getId() {
         return id;
@@ -52,11 +59,11 @@ public class ExpenseEntity {
         this.category = category;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 }

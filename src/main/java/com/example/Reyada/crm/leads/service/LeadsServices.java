@@ -113,4 +113,8 @@ public class LeadsServices {
         }).collect(Collectors.toList());
         return leadsRepo.saveAll(entities);
     }
+
+    public List<Lead> getOfflineLeads(){
+        return leadsRepo.findAll();
+    }
 }

@@ -23,14 +23,21 @@ public class LeadsController {
     // Example method to get all leads (to be implemented)
     // Leads endpoints
     @GetMapping("")
-    public List<LeadDto> getLeads(
+    public List<?> getLeads(
             @RequestParam Map<String,String> params,
             @RequestParam(defaultValue = "ASC") String sortField,
             @RequestParam(defaultValue = "ASC") String sortOrder
     ) throws JsonProcessingException {
         Map<String,Object> filter = buildFilter(params);
         Map<String,String> order = Map.of(sortField, sortOrder);
-        return leadsServices.listLeads(filter, order);
+
+        List<?> leads;
+        try {
+            leads=  leadsServices.listLeads(filter, order);
+        }catch (Exception e){
+            leads=leadsServices.getOfflineLeads();
+        }
+        return leads;
     }
     private Map<String,Object> buildFilter(Map<String,String> params) {
         Map<String,Object> f = new HashMap<>();

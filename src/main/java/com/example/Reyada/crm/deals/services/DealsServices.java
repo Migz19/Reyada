@@ -46,8 +46,8 @@ public class DealsServices {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-
-
+        params.add("filter[=STAGE_ID]", "WON");
+        params.add("select[]","OPPORTUNITY");
         params.add("select[]", "ID");
         params.add("select[]", "TITLE");
         params.add("select[]", "STAGE_ID");
@@ -149,7 +149,9 @@ public class DealsServices {
 
         return deal;
     }
-
+    public List<Deal> fetchDealsOffline(){
+        return  repo.findAll();
+    }
 }
 
 

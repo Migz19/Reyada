@@ -1,5 +1,6 @@
 package com.example.Reyada.crm.tasks;
 
+import com.example.Reyada.crm.tasks.data.Task;
 import com.example.Reyada.crm.tasks.services.TaskDto;
 import com.example.Reyada.crm.tasks.services.TaskRequest;
 import com.example.Reyada.crm.tasks.services.TasksServices;
@@ -25,7 +26,7 @@ public class TasksController {
         return ResponseEntity.ok(result);
     }
     @GetMapping
-    public List<TaskDto> getTasks(
+    public List<?> getTasks(
             @RequestParam(required = false) Long minId,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) String createdBefore
@@ -34,7 +35,15 @@ public class TasksController {
         if (minId != null) filter.put(">ID", minId);
         if (status != null) filter.put("=REAL_STATUS", status);
         if (createdBefore != null) filter.put("<CREATED_DATE", createdBefore);
-        return taskService.listTasks(filter);
+        List<?> tasks;
+        try {
+            System.out.println("9148237ndsjankjs");
+         tasks=   taskService.listTasks(filter);
+        }catch (Exception e){
+            System.out.println("2439582349jfsdj");
+            tasks=taskService.fetchTasksoffline();
+        }
+        return tasks;
     }
 
     @GetMapping("/{id}")

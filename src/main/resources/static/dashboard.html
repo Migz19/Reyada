@@ -447,7 +447,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
-            <h1><i class="fas fa-chart-line"></i> RREYADA Analytics</h1>
+            <h1><i class="fas fa-chart-line"></i> REYADA Analytics</h1>
         </div>
         <ul class="nav-links">
             <li class="active" data-target="dashboard"><i class="fas fa-home"></i> Dashboard</li>
@@ -673,58 +673,54 @@
         return res.json();
       })
       .then(expenses => {
-        // expenses should be an array of objects like:
-        // { id, date, type, category, description, amount }
         expenses.forEach(exp => {
-          const tr = document.createElement('tr');
+          const id       = exp.Id;
+          const type     = exp.type;
+          const category = exp.category;
 
-          // format the date
-          const dt = new Date(exp.date);
-          const dateStr = dt.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
+          // format date once per expense
+          let dateStr = '';
+          if (exp.date) {
+            const dt = new Date(exp.date);
+            dateStr = dt.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+          }
+
+          // for each field entry, output a row
+          Object.entries(exp.fields || {}).forEach(([key, value]) => {
+            const amount = parseFloat(value).toFixed(2);
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${dateStr}</td>
+              <td>${type}</td>
+              <td>${category}</td>
+              <td>${key}</td>                     <!-- Description = field key -->
+              <td>$${amount}</td>                 <!-- Amount = field value -->
+              <td>
+                <button data-id="${id}" class="edit-btn">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button data-id="${id}" class="delete-btn">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            `;
+            tbody.appendChild(tr);
           });
-
-          tr.innerHTML = `
-            <td>${dateStr}</td>
-            <td>${exp.type}</td>
-            <td>${exp.category}</td>
-            <td>${exp.description}</td>
-            <td>$${parseFloat(exp.amount).toFixed(2)}</td>
-            <td>
-              <button data-id="${exp.id}" class="edit-btn">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button data-id="${exp.id}" class="delete-btn">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          `;
-
-          tbody.appendChild(tr);
         });
       })
       .catch(err => {
         console.error('Failed to fetch expenses:', err);
         tbody.innerHTML = `<tr><td colspan="6">Failed to load expenses.</td></tr>`;
       });
-
-    // You can also delegate click events for edit/delete:
-    tbody.addEventListener('click', e => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-      const id = btn.getAttribute('data-id');
-      if (btn.classList.contains('edit-btn')) {
-        // call your edit function
-        editExpense(id);
-      } else if (btn.classList.contains('delete-btn')) {
-        deleteExpense(id);
-      }
-    });
   });
-
 </script>
+
+
             <script>
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('expenseForm');
@@ -789,22 +785,24 @@
         </section>
 
         <!-- Financial Summary Section -->
+        <!-- Financial Summary Section -->
         <section id="summary" class="dashboard-section">
             <h3>Financial Summary</h3>
+
             <div class="kpi-grid">
                 <div class="kpi-card">
                     <div class="title">Total Income</div>
-                    <div class="value">$128,450</div>
+                    <div class="value" id="totalIncome">$128,450</div>
                     <div class="trend up"><i class="fas fa-arrow-up"></i> 12.5% from last month</div>
                 </div>
                 <div class="kpi-card">
                     <div class="title">Total Expenses</div>
-                    <div class="value">$34,210</div>
+                    <div class="value" id="totalExpenses">$0.00</div>  <!-- will be set dynamically -->
                     <div class="trend down"><i class="fas fa-arrow-down"></i> 3.2% from last month</div>
                 </div>
                 <div class="kpi-card">
                     <div class="title">Net Profit</div>
-                    <div class="value">$94,240</div>
+                    <div class="value" id="netProfit">$94,240</div>
                     <div class="trend up"><i class="fas fa-arrow-up"></i> 18.7% from last month</div>
                 </div>
             </div>
@@ -859,7 +857,7 @@
                         <th>Profit Margin</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="financialOverviewBody">
                     <tr>
                         <td>January 2023</td>
                         <td>$32,450</td>
@@ -892,6 +890,39 @@
                 </table>
             </div>
         </section>
+
+        <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const totalExpensesElement = document.getElementById('totalExpenses');
+
+    fetch('http://localhost:8080/crm/expenses')
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(expenses => {
+        let totalAmount = 0;
+
+        expenses.forEach(exp => {
+          const fields = exp.fields || {};
+          Object.values(fields).forEach(value => {
+            const num = parseFloat(value);
+            if (!isNaN(num)) {
+              totalAmount += num;
+            }
+          });
+        });
+
+        totalExpensesElement.textContent =
+          `$${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+      })
+      .catch(err => {
+        console.error('Failed to calculate total expenses:', err);
+        totalExpensesElement.textContent = '$0.00';
+      });
+  });
+</script>
+
     </div>
 </div>
 
@@ -1857,5 +1888,41 @@
         // Helper functions
 
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Fetch and calculate total income from crm/deals
+    fetch('http://localhost:8080/crm/deals')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch deals');
+        return res.json();
+      })
+      .then(deals => {
+        let totalIncome = 0;
+
+        deals.forEach(deal => {
+          const opp = parseFloat(deal.OPPORTUNITY || 0);
+          if (!isNaN(opp)) {
+            totalIncome += opp;
+          }
+        });
+
+        // Update Total Income
+        document.getElementById('totalIncome').textContent = `$${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+
+        // Optionally recalculate net profit if Total Expenses are also loaded dynamically
+        const expenseValue = document.getElementById('totalExpenses').textContent.replace(/[^0-9.-]+/g,"");
+        const totalExpenses = parseFloat(expenseValue);
+        if (!isNaN(totalExpenses)) {
+          const netProfit = totalIncome - totalExpenses;
+          document.getElementById('netProfit').textContent = `$${netProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+        }
+      })
+      .catch(err => {
+        console.error('Error loading income data:', err);
+        document.getElementById('totalIncome').textContent = 'Error loading income';
+      });
+  });
+</script>
+
 </body>
 </html>

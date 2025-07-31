@@ -6,7 +6,9 @@ import com.example.Reyada.crm.tasks.data.Task;
 import com.example.Reyada.crm.tasks.data.TasksRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -95,52 +97,49 @@ public class TasksServices {
     }
 
 
-    public List<TaskDto> listTasks(Map<String, Object> filter) throws JsonProcessingException {
+    public List<Task> listTasks(Map<String, Object> filter) throws JsonProcessingException {
         String url = String.format("%s/rest/%s/%s/tasks.task.list",
-                bitrixBaseUrl,
-                userId,
-                webhook);
-        // Build request payload
+                bitrixBaseUrl, userId, webhook);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         Map<String,Object> body = Map.of(
-                "filter", filter,
-                "select", List.of("ID","CREATED_DATE","DEADLINE","RESPONSIBLE_ID","REAL_STATUS","RESPONSIBLE_LAST_NAME")
+                "filter",   filter,
+                "select",  List.of("ID","CREATED_DATE","DEADLINE","RESPONSIBLE_ID","REAL_STATUS","RESPONSIBLE_LAST_NAME")
         );
-        HttpHeaders headers = new HttpHeaders(); headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String,Object>> request = new HttpEntity<>(body, headers);
-        String json = restTemplate.postForObject(url, request, String.class);
+        String raw = restTemplate
+                .postForObject(url, new HttpEntity<>(body, headers), String.class);
 
-        // Parse manually to handle offset timestamps safely
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(json);
-        JsonNode tasksNode = root.path("result").path("tasks");
+        // strip junk before the first '{'
+        int idx = raw.indexOf('{');
+        if (idx > 0) raw = raw.substring(idx);
 
-        List<TaskDto> list = new ArrayList<>();
-        for (JsonNode node : tasksNode) {
+        // parse JSON with case‐insensitive props and JavaTime support
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+                .registerModule(new JavaTimeModule());
+
+        JsonNode tasks = mapper.readTree(raw)
+                .path("result")
+                .path("tasks");
+
+        List<TaskDto> dtos = new ArrayList<>();
+        for (JsonNode n : tasks) {
             TaskDto dto = new TaskDto();
-            dto.setId(node.path("ID").asLong());
-
-            String createdText = node.path("CREATED_DATE").asText(null);
-            if (createdText != null && !createdText.isEmpty()) {
-                dto.setCreatedDate(OffsetDateTime.parse(createdText).toLocalDateTime());
-            }
-
-            String deadlineText = node.path("DEADLINE").asText(null);
-            if (deadlineText != null && !deadlineText.isEmpty()) {
-                dto.setDeadline(OffsetDateTime.parse(deadlineText).toLocalDateTime());
-            }
-
-            dto.setResponsibleId(node.path("RESPONSIBLE_ID").asLong());
-            dto.setRealStatus(node.path("REAL_STATUS").asInt());
-            dto.setResponsibleLastName(node.path("RESPONSIBLE_LAST_NAME").asText(null));
-            list.add(dto);
+            dto.setId(n.path("id").asLong());
+            dto.setCreatedDate(OffsetDateTime.parse(n.path("createdDate").asText()).toLocalDateTime());
+            dto.setDeadline(   OffsetDateTime.parse(n.path("deadline").asText()).toLocalDateTime());
+            dto.setResponsibleId(   n.path("responsibleId").asLong());
+            dto.setRealStatus(      n.path("realStatus").asInt());
+            dto.setResponsibleLastName(n.path("responsible").path("name").asText());
+            dtos.add(dto);
         }
-        return list;
+        System.out.println("924389432"+dtos.get(0).toString());
+        return syncAndSaveTasks(dtos);
     }
-    /**
-     * Fetch tasks from Bitrix and persist them to the database.
-     */
-    public List<Task> syncAndSaveTasks(Map<String, Object> filter) throws JsonProcessingException {
-        List<TaskDto> dtos = listTasks(filter);
+
+    public List<Task> syncAndSaveTasks(List<TaskDto> dtos) throws JsonProcessingException {
+
         List<Task> entities = dtos.stream().map(dto -> {
             Task e = new Task();
             e.setId(dto.getId());
@@ -149,9 +148,14 @@ public class TasksServices {
             e.setResponsibleId(dto.getResponsibleId());
             e.setRealStatus(dto.getRealStatus());
             e.setResponsibleLastName(dto.getResponsibleLastName());
+            System.out.println("239428934"+ dto.toString());
             return e;
         }).collect(Collectors.toList());
         return repo.saveAll(entities);
+    }
+
+    public List<Task> fetchTasksoffline(){
+        return repo.findAll();
     }
 }
 
