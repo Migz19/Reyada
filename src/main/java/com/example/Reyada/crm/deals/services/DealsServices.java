@@ -46,7 +46,7 @@ public class DealsServices {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("filter[=STAGE_ID]", "WON");
+       // params.add("filter[=STAGE_ID]", "WON");
         params.add("select[]","OPPORTUNITY");
         params.add("select[]", "ID");
         params.add("select[]", "TITLE");
@@ -75,7 +75,42 @@ public class DealsServices {
         throw new RuntimeException("Failed to fetch filtered deals: empty response");
     }
 
+    public List<Deal> fetchDealsByStageWon() {
+        String url = String.format("%s/rest/%s/%s/crm.deal.list",
+                bitrixBaseUrl, userId, webhook);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("filter[=STAGE_ID]", "WON");
+        params.add("select[]","OPPORTUNITY");
+        params.add("select[]", "ID");
+        params.add("select[]", "TITLE");
+        params.add("select[]", "STAGE_ID");
+        params.add("select[]","TYPE_ID");
+        params.add("select[]", "ASSIGNED_BY_ID");
+        params.add("select[]","CATEGORY_ID");
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+
+
+        try {
+            DealResponse resp = restTemplate.postForObject(url, request, DealResponse.class);
+            if (resp != null && resp.getResult() != null) {
+                List<Deal> deals = Arrays.asList(resp.getResult());
+                // Apply default values for null fields
+                return deals.stream()
+                        .map(this::applyDealDefaults)
+                        .collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            System.err.println("Error fetching deals: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch deals from Bitrix24: " + e.getMessage(), e);
+        }
+
+        throw new RuntimeException("Failed to fetch filtered deals: empty response");
+    }
     public boolean updateDealInBitrix(Long id, Map<String,Object> fields) {
         String url = String.format("%s/rest/%s/%s/crm.deal.update",
                 bitrixBaseUrl, userId, webhook);

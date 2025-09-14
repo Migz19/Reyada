@@ -395,114 +395,115 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Bitrix24 Contact Manager</h1>
-            <p class="subtitle">Manage and view your CRM contacts</p>
-        </div>
-        <div class="controls">
-            <button class="btn btn-primary" onclick="loadContacts()">Load Contacts</button>
-            <button class="btn btn-secondary" onclick="refreshData()">Refresh Data</button>
-            <button class="btn btn-success" onclick="openAddContactModal()">Add New Contact</button>
-        </div>
-
-        <div class="search-container" style="display: none;">
-            <input type="text" class="search-input" placeholder="Search contacts by name, type, or source..." oninput="filterContacts(this.value)">
-        </div>
-
-        <div class="stats" id="stats" style="display: none;"></div>
-
-        <div id="content">
-            <div class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>Loading contacts...</p>
-            </div>
-            <div class="error" id="error" style="display: none;"></div>
-            <div class="contacts-grid" id="contactsGrid"></div>
-        </div>
-
-        <!-- Add Contact Modal -->
-        <div id="addContactModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeAddContactModal()">&times;</span>
-                <h2 style="margin-bottom: 20px; color: #333;">Add New Contact</h2>
-                <form id="addContactForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="firstName">First Name *</label>
-                            <input type="text" id="firstName" name="firstName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Last Name *</label>
-                            <input type="text" id="lastName" name="lastName" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="middleName">Middle Name</label>
-                        <input type="text" id="middleName" name="middleName">
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="contactType">Contact Type</label>
-                            <select id="contactType" name="contactType">
-                                <option value="CLIENT">Client</option>
-                                <option value="PARTNER">Partner</option>
-                                <option value="SUPPLIER">Supplier</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="source">Source</label>
-                            <select id="source" name="source">
-                                <option value="CALL">Call</option>
-                                <option value="EMAIL">Email</option>
-                                <option value="WEB">Web</option>
-                                <option value="ADVERTISING">Advertising</option>
-                                <option value="PARTNER">Partner</option>
-                                <option value="RECOMMENDATION">Recommendation</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="birthdate">Birth Date</label>
-                        <input type="date" id="birthdate" name="birthdate">
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="hasEmail">Has Email</label>
-                            <select id="hasEmail" name="hasEmail">
-                                <option value="N">No</option>
-                                <option value="Y">Yes</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="hasPhone">Has Phone</label>
-                            <select id="hasPhone" name="hasPhone">
-                                <option value="N">No</option>
-                                <option value="Y">Yes</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-buttons">
-                        <button type="button" class="btn btn-cancel" onclick="closeAddContactModal()">Cancel</button>
-                        <button type="submit" class="btn btn-success">Add Contact</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>Bitrix24 Contact Manager</h1>
+        <p class="subtitle">Manage and view your CRM contacts</p>
     </div>
 
-    <script>
+    <div class="controls">
+        <button class="btn btn-primary" onclick="loadContacts()">Load Contacts</button>
+        <button class="btn btn-secondary" onclick="refreshData()">Refresh Data</button>
+        <button class="btn btn-success" onclick="openAddContactModal()">Add New Contact</button>
+    </div>
+
+    <div class="search-container" style="display: none;">
+        <input type="text" class="search-input" placeholder="Search contacts by name, type, or source..." oninput="filterContacts(this.value)">
+    </div>
+
+    <div class="stats" id="stats" style="display: none;"></div>
+
+    <div id="content">
+        <div class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading contacts...</p>
+        </div>
+        <div class="error" id="error" style="display: none;"></div>
+        <div class="contacts-grid" id="contactsGrid"></div>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div id="addContactModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddContactModal()">&times;</span>
+            <h2 style="margin-bottom: 20px; color: #333;">Add New Contact</h2>
+            <form id="addContactForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="middleName">Middle Name</label>
+                    <input type="text" id="middleName" name="middleName">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contactType">Contact Type</label>
+                        <select id="contactType" name="contactType">
+                            <option value="CLIENT">Client</option>
+                            <option value="PARTNER">Partner</option>
+                            <option value="SUPPLIER">Supplier</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="source">Source</label>
+                        <select id="source" name="source">
+                            <option value="CALL">Call</option>
+                            <option value="EMAIL">Email</option>
+                            <option value="WEB">Web</option>
+                            <option value="ADVERTISING">Advertising</option>
+                            <option value="PARTNER">Partner</option>
+                            <option value="RECOMMENDATION">Recommendation</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthdate">Birth Date</label>
+                    <input type="date" id="birthdate" name="birthdate">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hasEmail">Has Email</label>
+                        <select id="hasEmail" name="hasEmail">
+                            <option value="N">No</option>
+                            <option value="Y">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hasPhone">Has Phone</label>
+                        <select id="hasPhone" name="hasPhone">
+                            <option value="N">No</option>
+                            <option value="Y">Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-cancel" onclick="closeAddContactModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
         let allContacts = [];
         let filteredContacts = [];
-        const API_URL = 'http://localhost:8080/crm/contacts';
-        const ADD_CONTACT_URL = 'http://localhost:8080/crm/addContact';
+        const API_URL = 'https://b24-0r8mng.bitrix24.com/rest/1/iolappou7w3kdu2w/crm.contact.list.json';
+        const ADD_CONTACT_URL = 'https://b24-0r8mng.bitrix24.com/rest/1/iolappou7w3kdu2w/crm.contact.add.json';
 
         async function loadContacts() {
             const loading = document.querySelector('.loading');
@@ -570,34 +571,34 @@
             }
         }
 
-     async function addNewContact(contactData) {
-    try {
-        const response = await fetch(ADD_CONTACT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // ✅ Removed the "fields" wrapper here
-            body: JSON.stringify(contactData)
-        });
+        async function addNewContact(contactData) {
+            try {
+                const response = await fetch(ADD_CONTACT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fields: contactData
+                    })
+                });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.error) {
+                    throw new Error(result.error_description || 'Failed to add contact');
+                }
+
+                return result;
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                throw error;
+            }
         }
-
-        const result = await response.json();
-
-        if (result.error) {
-            throw new Error(result.error_description || 'Failed to add contact');
-        }
-
-        return result;
-    } catch (error) {
-        console.error('Error adding contact:', error);
-        throw error;
-    }
-}
-
 
         // Handle form submission
         document.getElementById('addContactForm').addEventListener('submit', async function(e) {
@@ -704,10 +705,10 @@
             }
 
             contactsGrid.innerHTML = contacts.map(contact => {
-                const name = `${contact.Name || ''} ${contact.SecondName ? contact.SecondName + ' ' : ''}${contact.LastName || ''}`.trim() || 'No Name';
+                const name = `${contact.NAME || ''} ${contact.SECOND_NAME ? contact.SECOND_NAME + ' ' : ''}${contact.LAST_NAME || ''}`.trim() || 'No Name';
                 const hasEmail = contact.HAS_EMAIL === 'Y' ? 'Yes' : 'No';
                 const hasPhone = contact.HAS_PHONE === 'Y' ? 'Yes' : 'No';
-                const birthdate = contact.Birthdate ? new Date(contact.Birthdate).toLocaleDateString() : 'No Birthdate';
+                const birthdate = contact.BIRTHDATE ? new Date(contact.BIRTHDATE).toLocaleDateString() : 'No Birthdate';
                 const contactType = contact.TYPE_ID || 'No Type';
                 const source = contact.SOURCE_ID || 'No Source';
 
@@ -738,7 +739,7 @@
         function filterContacts(searchTerm) {
             const term = searchTerm.toLowerCase();
             filteredContacts = allContacts.filter(contact => {
-                const name = `${contact.Name || ''} ${contact.SecondName || ''} ${contact.LastName || ''}`.toLowerCase();
+                const name = `${contact.NAME || ''} ${contact.SECOND_NAME || ''} ${contact.LAST_NAME || ''}`.toLowerCase();
                 const contactType = (contact.TYPE_ID || '').toLowerCase();
                 const source = (contact.SOURCE_ID || '').toLowerCase();
 

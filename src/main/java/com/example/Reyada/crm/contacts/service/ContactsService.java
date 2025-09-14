@@ -47,8 +47,8 @@ public class ContactsService {
         contact.setName((String) contac.get("NAME"));
         contact.setSecondName((String) contac.get("SECOND_NAME"));
         contact.setLastName((String) contac.get("LAST_NAME"));
-        contact.setBirthdate(LocalDate.now());
-        contactsRepo.save(contact);
+      //  contact.setBirthdate((LocalDate) contac.get("BIRTHDATE"));
+        //contactsRepo.save(contact);
         return restTemplate.postForObject(webhookUrl,request,String.class);
     }
 
@@ -85,7 +85,9 @@ public class ContactsService {
         fetchContactsFromBitrix();
         return contactsRepo.findAll();
     }
-
+    public List<Contact> getContactsOffline(){
+        return contactsRepo.findAll();
+    }
     private Contact mapToEntity(Map<String, Object> item) {
         Contact contact = new Contact();
         contact.setId(Long.valueOf((item.get("ID").toString())));

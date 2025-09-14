@@ -1,5 +1,6 @@
 package com.example.Reyada.crm.contacts.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -10,12 +11,13 @@ public class Contact {
     @Id
     @Column(name = "ID")
     private Long id;
-
+    @JsonProperty("NAME")
     @Column(name = "Name")
     private String name;
-
+    @JsonProperty("SECOND_NAME")
     @Column(name = "second_name")
     private String secondName;
+    @JsonProperty("LAST_NAME")
     @Column(name = "last_name")
     private String lastName;
     @Column(name = "birthdate")

@@ -56,6 +56,10 @@
             background: #3b82f6;
             margin-top: 0.5rem;
         }
+         .view-sales-button {
+            background: #fc6819;
+            margin-top: 0.5rem;
+        }
         .view-analytics-button {
             background: #07f56e;
             margin-top: 1.5rem;
@@ -98,6 +102,7 @@
         <p><strong>Username:</strong> <span id="profileUsername">Loading...</span></p>
         <p><strong>Email:</strong> <span id="profileEmail">Loading...</span></p>
     </div>
+    <button id="viewSalesButton" class="button view-sales-button">View Deals</button>
     <button id="viewAnalyticsButton" class="button view-analytics-button">View Analytics</button>
     <button id="manageContactsButton" class="button manage-contacts-button">Manage Contacts</button>
     <button id="logoutButton" class="button logout-button">Logout</button>
@@ -137,8 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(data => {
       console.log("💾 Got user:", data);
-      profileUsername.textContent = data.Name || data.Email || 'Unknown';
-      profileEmail.textContent = data.Email || 'Unknown';
+      profileUsername.textContent = data.username || 'Unknown';
+      profileEmail.textContent = data.email || 'Unknown';
       showStatus('Profile loaded successfully!');
     })
     .catch(err => {
@@ -176,6 +181,15 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Logout error:', err);
       showStatus('Logout failed. Please try again.', true);
     });
+  });
+
+   // view Sales Button handler
+  viewSalesButton.addEventListener('click', () => {
+    console.log('view Sales Button clicked');
+    showStatus('opening Sales dashboard...');
+
+    // Open contacts dashboard in new tab
+    window.open('sales_order.html', '_blank');
   });
 
   // Manage contacts button handler

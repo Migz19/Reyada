@@ -20,7 +20,12 @@ public class ContactsController {
     }
     @GetMapping("/contacts")
     public ResponseEntity<Map<String, Object>> getContacts() {
-        List<Contact> contacts = contactsService.getContacts();
+        List<Contact> contacts ;
+        try {
+            contacts=contactsService.getContacts();
+        }catch (Exception e){
+            contacts=contactsService.getContactsOffline();
+        }
         Map<String, Object> response = Map.of("result", contacts);
         return ResponseEntity.ok(response);
     }
